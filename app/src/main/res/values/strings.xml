@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">kotlin_yahtzee</string>
+    <string name="welcome" >Welcome to Jackzee</string>
+    <string name="name_entry">Enter Your Name</string>
+    <string name="number_AI" >How many computer opponents would you like?</string>
+    <string name="ai_number_entry" >Enter Number</string>
+    <string name="start_game">Let\'s Roll!</string>
 </resources>
