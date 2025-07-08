@@ -1,15 +1,21 @@
 package com.example.kotlin_yahtzee
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
 class GameViewModel(): ViewModel() {
     private val gameModel = GameModel()
     private val playerName = "Brian"
     private var currentPlayer = Player()
-    private var currentScorecard = arrayListOf<String>("2", "4", "9", "16", "15", "18", "25", "18", "25", "30", "0", "0", "17")
+    var currentScorecard =  arrayListOf<String>("2", "4", "9", "16", "15", "18", "25", "18", "25", "30", "0", "0", "17")
     private var diceHand = arrayListOf(2, 5, 6, 3, 1)
-    private var isRollingDone = false
-    private var isPlayerTurn = true
+    var isRollingDone by mutableStateOf(false)
+    private set
+
+    var isPlayerTurn by mutableStateOf(true)
+    private set
 
     fun createGame(playerName: String, aiPlayers: Int) {
         gameModel.createGame(playerName, aiPlayers)
@@ -17,10 +23,6 @@ class GameViewModel(): ViewModel() {
 
     fun getPlayerName(): String {
         return playerName
-    }
-
-    fun getScorecardCategory(category: Int): String {
-        return currentScorecard[category]
     }
 
     fun getScoreCard(): ArrayList<String> {
@@ -40,7 +42,7 @@ class GameViewModel(): ViewModel() {
     }
 
     fun reRollDice(diceToKeep: List<Boolean>) {
-
+        isRollingDone = true
     }
 
     fun keepAllDice() {
@@ -48,6 +50,6 @@ class GameViewModel(): ViewModel() {
     }
 
     fun chooseScoreCategory(category: Int) {
-
+        isRollingDone = false
     }
 }

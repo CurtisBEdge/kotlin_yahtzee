@@ -1,7 +1,13 @@
-AIPlayer entry crashes app if it's empty - need to stop button if there's no value
+Where I'm up to - Need to start converting the business logic from Java to Kotlin taking into account the viewmodel. The UI is mostly done until i write more functionality
+Maybe need to add a counter for the rerolls. Currently it's not obvious how many you have
 
-DONE - Scorecard display could be more efficient - some sort of loop
 
 Calculate dice images, needs a default return, so I've just used Dice one for now
 
-default category selected is 0 for ones, this is not good
+
+
+DONE - AIPlayer entry crashes app if it's empty - need to stop button if there's no value
+
+DONE - Scorecard display could be more efficient - some sort of loop
+
+DONE - default category selected is 0 for ones, this is not good - Now -1, this doesn't automatically select one, but is still not good - Now won't do anything is invalid category selected
