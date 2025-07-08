@@ -1,5 +1,7 @@
 AIPlayer entry crashes app if it's empty - need to stop button if there's no value
 
-Scorecard display could be more efficient - some sort of loop
+DONE - Scorecard display could be more efficient - some sort of loop
 
 Calculate dice images, needs a default return, so I've just used Dice one for now
+
+default category selected is 0 for ones, this is not good

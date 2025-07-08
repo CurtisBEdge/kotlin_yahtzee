@@ -8,7 +8,8 @@ class GameViewModel(): ViewModel() {
     private var currentPlayer = Player()
     private var currentScorecard = arrayListOf<String>("2", "4", "9", "16", "15", "18", "25", "18", "25", "30", "0", "0", "17")
     private var diceHand = arrayListOf(2, 5, 6, 3, 1)
-    private var rollingDone = true
+    private var isRollingDone = false
+    private var isPlayerTurn = true
 
     fun createGame(playerName: String, aiPlayers: Int) {
         gameModel.createGame(playerName, aiPlayers)
@@ -30,7 +31,23 @@ class GameViewModel(): ViewModel() {
         return diceHand
     }
 
-    fun getRollingDone(): Boolean {
-        return rollingDone
+    fun getIsPlayerTurn(): Boolean {
+        return isPlayerTurn
+    }
+
+    fun getIsRollingDone(): Boolean {
+        return isRollingDone
+    }
+
+    fun reRollDice(diceToKeep: List<Boolean>) {
+
+    }
+
+    fun keepAllDice() {
+        isRollingDone = true
+    }
+
+    fun chooseScoreCategory(category: Int) {
+
     }
 }

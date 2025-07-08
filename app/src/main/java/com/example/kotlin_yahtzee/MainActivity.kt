@@ -19,7 +19,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.kotlin_yahtzee.ui.theme.Kotlin_yahtzeeTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.Image
@@ -143,7 +141,7 @@ fun AiNumberEntry(aiNumber: String, onValueChange: (String) -> Unit) {
 fun Game(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
 
     var selectedDice by remember { mutableStateOf(List(5){false}) }
-    var selectedCategory by remember { mutableStateOf(Int) }
+    var selectedCategory by remember { mutableStateOf(-1) }
 
     Column(modifier = Modifier.fillMaxSize()) {
 
@@ -159,13 +157,22 @@ fun Game(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
                 it[index] = !it[index]
         }})
 
-        Row {
-            Button (onClick = {}) {
-                Text ("Reroll dice")
-            }
+        if (!gameViewModel.getIsRollingDone()) {
+            Row {
+                Button(onClick = { gameViewModel.reRollDice(selectedDice) }) {
+                    Text("Reroll dice")
+                }
 
-            Button (onClick = {}) {
-                Text ("Keep all")
+                Button(onClick = { gameViewModel.keepAllDice() }) {
+                    Text("Keep all")
+                }
+            }
+        } else {
+            Button(
+                onClick = { gameViewModel.chooseScoreCategory(selectedCategory)
+
+                }){
+                Text("Confirm Category")
             }
         }
     }
@@ -187,7 +194,7 @@ fun ScoreCard(gameViewModel: GameViewModel, selectedCategory: Int, onClick: (Int
                     val isSelected = index == selectedCategory
                     if (index <= 5) {
                         Text(text = "${scoreCategories[index]}: $category",
-                            modifier = if (gameViewModel.getRollingDone()) {
+                            modifier = if (gameViewModel.getIsRollingDone() && gameViewModel.getIsPlayerTurn()) {
                                 Modifier.clickable { onClick(index) }
                                         .border(
                                             width = if (isSelected) 3.dp else 0.dp,
@@ -203,9 +210,18 @@ fun ScoreCard(gameViewModel: GameViewModel, selectedCategory: Int, onClick: (Int
 
             Column(modifier.weight(1f)) {
                 scoreCard.forEachIndexed { index, category ->
+                    val isSelected = index == selectedCategory
                     if (index > 5) {
                         Text(text = "${scoreCategories[index]}: $category",
-
+                            modifier = if (gameViewModel.getIsRollingDone() && gameViewModel.getIsPlayerTurn()) {
+                                Modifier.clickable { onClick(index) }
+                                    .border(
+                                        width = if (isSelected) 3.dp else 0.dp,
+                                        color = if (isSelected) Color.Red else Color.Transparent
+                                    )
+                            } else {
+                                Modifier
+                            }
                             )
                     }
                 }
@@ -225,16 +241,22 @@ fun DiceDisplay(gameViewModel: GameViewModel, selectedDice: List<Boolean>, onTog
             Image(
                 painter = painter,
                 contentDescription = null,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(5.dp)
-                    .clickable {
-                        onToggle(index)
+                modifier = if (gameViewModel.getIsPlayerTurn() && !gameViewModel.getIsRollingDone()) {
+                    Modifier
+                        .weight(1f)
+                        .padding(5.dp)
+                        .clickable {
+                            onToggle(index)
                         }
-                    .border(
-                        width = if (isSelected) 3.dp else 0.dp,
-                        color = if (isSelected) Color.Red else Color.Transparent
-                    )
+                        .border(
+                            width = if (isSelected) 3.dp else 0.dp,
+                            color = if (isSelected) Color.Red else Color.Transparent
+                        )
+                } else {
+                    Modifier
+                        .weight(1f)
+                        .padding((5.dp))
+                }
             )
         }
     }
