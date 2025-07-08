@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.kotlin_yahtzee.ui.theme.Kotlin_yahtzeeTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +29,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +46,9 @@ class MainActivity : ComponentActivity() {
             Kotlin_yahtzeeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     App(
-                        modifier = Modifier.padding(innerPadding).fillMaxSize()
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize()
                     )
                 }
             }
@@ -49,23 +60,24 @@ class MainActivity : ComponentActivity() {
 fun App(modifier: Modifier = Modifier) {
 
     val navController = rememberNavController()
+    val gameViewModel: GameViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = "home", modifier = modifier.fillMaxSize()) {
 
         composable(route = "home") {
-            MainScreen(onNextScreen = {
+            MainScreen(gameViewModel, onNextScreen = {
                 navController.navigate("game")
             })
         }
 
         composable(route = "game") {
-            Game(onNextScreen = {
+            Game(gameViewModel, onNextScreen = {
                 navController.navigate("results")
             })
         }
 
         composable(route = "results") {
-            Results(onNextScreen = {
+            Results(gameViewModel, onNextScreen = {
                 navController.navigate("home")
             })
         }
@@ -74,19 +86,22 @@ fun App(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MainScreen (onNextScreen: () -> Unit) {
+fun MainScreen (gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
 
     var nameInput by remember {mutableStateOf("")}
-    var AiNumber by remember { mutableIntStateOf(0) }
+    var aiNumber by remember { mutableStateOf("0") }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text(stringResource(R.string.welcome))
 
         NameEntry(nameInput, onValueChange = {nameInput = it})
 
-        AiNumberEntry(AiNumber, onValueChange = {AiNumber = it})
+        AiNumberEntry(aiNumber, onValueChange = {aiNumber = it})
 
-        Button(onClick = onNextScreen) {
+        Button(onClick = {
+            gameViewModel.createGame(nameInput, aiNumber.toInt())
+            onNextScreen()
+        }) {
             Text("Play Game")
         }
     }
@@ -105,33 +120,147 @@ fun NameEntry(nameInput: String, onValueChange: (String) -> Unit) {
 }
 
 @Composable
-fun AiNumberEntry(AiNumber: Int, onValueChange: (Int) -> Unit) {
-    
+fun AiNumberEntry(aiNumber: String, onValueChange: (String) -> Unit) {
+
     Row {
         Text(stringResource(R.string.number_AI))
 
         TextField(
-            value = AiNumber,
+            value = aiNumber,
             label = {Text(stringResource(R.string.ai_number_entry))},
-            onValueChange = onValueChange
+            onValueChange = onValueChange,
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
     }
-
 }
 
-@Composable
-fun Game(onNextScreen: () -> Unit) {
+// game page content
+//
+//
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Button(onClick = onNextScreen) {
-            Text("Game over, get results")
+@Composable
+fun Game(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
+
+    var selectedDice by remember { mutableStateOf(List(5){false}) }
+    var selectedCategory by remember { mutableStateOf(Int) }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+
+        Text ( "Player: ${gameViewModel.getPlayerName()}")
+
+        ScoreCard(gameViewModel, selectedCategory, onClick = {index: Int ->
+            selectedCategory = index
+        } , modifier = Modifier)
+
+        Text ("Choose the dice you wish to keep:")
+        DiceDisplay(gameViewModel, selectedDice, onToggle = { index ->
+            selectedDice = selectedDice.toMutableList().also {
+                it[index] = !it[index]
+        }})
+
+        Row {
+            Button (onClick = {}) {
+                Text ("Reroll dice")
+            }
+
+            Button (onClick = {}) {
+                Text ("Keep all")
+            }
         }
     }
-
 }
 
 @Composable
-fun Results(onNextScreen: () -> Unit) {
+fun ScoreCard(gameViewModel: GameViewModel, selectedCategory: Int, onClick: (Int) -> Unit, modifier: Modifier) {
+    val scoreCategories = listOf("Ones", "Twos", "Threes", "Fours", "Fives", "Sixes", "3 of a Kind", "4 of a Kind", "Full House", "Low Straight", "High Straight", "Jacktzee", "Chance")
+
+    val scoreCard = gameViewModel.getScoreCard()
+
+    Column {
+        Text("Scorecard")
+
+        Row{
+            Column(modifier.weight(1f)) {
+                scoreCard.forEachIndexed { index, category ->
+
+                    val isSelected = index == selectedCategory
+                    if (index <= 5) {
+                        Text(text = "${scoreCategories[index]}: $category",
+                            modifier = if (gameViewModel.getRollingDone()) {
+                                Modifier.clickable { onClick(index) }
+                                        .border(
+                                            width = if (isSelected) 3.dp else 0.dp,
+                                            color = if (isSelected) Color.Red else Color.Transparent
+                                        )
+                            } else {
+                                Modifier
+                            }
+                            )
+                    }
+                }
+            }
+
+            Column(modifier.weight(1f)) {
+                scoreCard.forEachIndexed { index, category ->
+                    if (index > 5) {
+                        Text(text = "${scoreCategories[index]}: $category",
+
+                            )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DiceDisplay(gameViewModel: GameViewModel, selectedDice: List<Boolean>, onToggle: (Int) -> Unit) {
+
+    val diceImages = gameViewModel.getDiceHand().map { calculateDiceImages(it) }
+
+    Row {
+        diceImages.forEachIndexed { index, painter ->
+            val isSelected = selectedDice[index]
+            Image(
+                painter = painter,
+                contentDescription = null,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(5.dp)
+                    .clickable {
+                        onToggle(index)
+                        }
+                    .border(
+                        width = if (isSelected) 3.dp else 0.dp,
+                        color = if (isSelected) Color.Red else Color.Transparent
+                    )
+            )
+        }
+    }
+}
+
+@Composable
+fun calculateDiceImages(dice: Int): Painter {
+    when (dice) {
+        1 -> return painterResource(R.drawable.dice_one)
+        2 -> return painterResource(R.drawable.dice_two)
+        3 -> return painterResource(R.drawable.dice_three)
+        4 -> return painterResource(R.drawable.dice_four)
+        5 -> return painterResource(R.drawable.dice_five)
+        6 -> return painterResource(R.drawable.dice_six)
+
+    }
+    return painterResource(R.drawable.dice_one)
+}
+
+
+// Results page content
+//
+//
+
+@Composable
+fun Results(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         Button(onClick = onNextScreen) {
