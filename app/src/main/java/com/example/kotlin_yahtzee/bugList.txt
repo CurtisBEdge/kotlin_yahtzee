@@ -6,6 +6,8 @@ Randomly crashes when using 2 players.
 
 The rolls left is inconsistent, sometimes you can only choose category
 
+3 and 4 of a kind keeps being 0
+
 
 **** Changed the game creation on the UI to always input AI players as 0 - This needs to be changed once AI is implemented
 
