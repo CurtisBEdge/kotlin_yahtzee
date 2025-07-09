@@ -1,11 +1,31 @@
 package com.example.kotlin_yahtzee
 
 class GameModel {
-    private var roundNumber = 1
+    private var currentPlayer = 0
     private var playerList: ArrayList<Player> = arrayListOf()
 
 
     fun createGame(playerName: String, aiPlayers: Int) {
+        val newPlayer = Player(playerName)
+        // need to add ability to add AI players to the playerList
+        playerList.add(newPlayer)
+//        playerList.add(Player("Brian"))
+        currentPlayer = 0
+    }
+
+    fun getCurrentPlayer(): Player {
+        return playerList[currentPlayer]
+    }
+
+    fun incrementCurrentPlayer() {
+        currentPlayer ++
+        if (currentPlayer >= playerList.size) {
+            currentPlayer = 0
+        }
+    }
+
+    fun updateCurrentPlayerScore(category: Int, diceHand: ArrayList<Int>) {
+        playerList[currentPlayer].updateScorecard(category, diceHand)
 
     }
 }

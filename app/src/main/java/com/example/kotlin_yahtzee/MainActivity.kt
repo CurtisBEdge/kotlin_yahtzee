@@ -36,6 +36,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,7 +102,7 @@ fun MainScreen (gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
 
         Button(onClick = {
             if (aiNumber.isNotEmpty() && aiNumber.isDigitsOnly() && aiNumber.toInt() > -1 && aiNumber.toInt() < 5) {
-                gameViewModel.createGame(nameInput, aiNumber.toInt())
+                gameViewModel.createGame(nameInput, 0)
                 onNextScreen()
             } else {
                 aiNumber = "0"
@@ -150,14 +153,18 @@ fun AiNumberEntry(aiNumber: String, onValueChange: (String) -> Unit) {
 fun Game(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
 
     var selectedDice by remember { mutableStateOf(List(5){false}) }
-    var selectedCategory by remember { mutableStateOf(-1) }
+    var selectedCategory by remember { mutableIntStateOf(-1) }
 
     Column(modifier = Modifier.fillMaxSize()) {
 
         Text ( "Player: ${gameViewModel.getPlayerName()}")
 
         ScoreCard(gameViewModel, selectedCategory, onClick = {index: Int ->
-            selectedCategory = index
+            val scorecard = gameViewModel.getScoreCard()
+            if (scorecard[index].isEmpty()) {
+                selectedCategory = index
+            }
+
         } , modifier = Modifier)
 
         Text ("Choose the dice you wish to keep:")
@@ -166,7 +173,9 @@ fun Game(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
                 it[index] = !it[index]
         }})
 
-        if (!gameViewModel.getIsRollingDone()) {
+        if (!gameViewModel.isRollingDone) {
+
+            Text ("Rolls left: ${gameViewModel.rerolls}")
             Row {
                 Button(onClick = {
                     gameViewModel.reRollDice(selectedDice)
@@ -248,7 +257,7 @@ fun ScoreCard(gameViewModel: GameViewModel, selectedCategory: Int, onClick: (Int
 @Composable
 fun DiceDisplay(gameViewModel: GameViewModel, selectedDice: List<Boolean>, onToggle: (Int) -> Unit) {
 
-    val diceImages = gameViewModel.getDiceHand().map { calculateDiceImages(it) }
+    val diceImages = gameViewModel.diceHand.map { calculateDiceImages(it) }
 
     Row {
         diceImages.forEachIndexed { index, painter ->
@@ -279,16 +288,15 @@ fun DiceDisplay(gameViewModel: GameViewModel, selectedDice: List<Boolean>, onTog
 
 @Composable
 fun calculateDiceImages(dice: Int): Painter {
-    when (dice) {
-        1 -> return painterResource(R.drawable.dice_one)
-        2 -> return painterResource(R.drawable.dice_two)
-        3 -> return painterResource(R.drawable.dice_three)
-        4 -> return painterResource(R.drawable.dice_four)
-        5 -> return painterResource(R.drawable.dice_five)
-        6 -> return painterResource(R.drawable.dice_six)
-
+    return when (dice) {
+        1 -> painterResource(R.drawable.dice_one)
+        2 -> painterResource(R.drawable.dice_two)
+        3 -> painterResource(R.drawable.dice_three)
+        4 -> painterResource(R.drawable.dice_four)
+        5 -> painterResource(R.drawable.dice_five)
+        6 -> painterResource(R.drawable.dice_six)
+        else -> error("Invalid dice value $dice")
     }
-    return painterResource(R.drawable.dice_one)
 }
 
 

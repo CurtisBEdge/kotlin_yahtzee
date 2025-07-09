@@ -2,9 +2,17 @@ Where I'm up to - Need to start converting the business logic from Java to Kotli
 Maybe need to add a counter for the rerolls. Currently it's not obvious how many you have
 
 
-Calculate dice images, needs a default return, so I've just used Dice one for now
+Randomly crashes when using 2 players.
+
+The rolls left is inconsistent, sometimes you can only choose category
 
 
+**** Changed the game creation on the UI to always input AI players as 0 - This needs to be changed once AI is implemented
+
+
+DONE - Need to make it so you can't pick a category that you've already picked
+
+DONE - Calculate dice images, needs a default return, so I've just used Dice one for now - added an else that throws an error
 
 DONE - AIPlayer entry crashes app if it's empty - need to stop button if there's no value
 
