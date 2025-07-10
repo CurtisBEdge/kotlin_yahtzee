@@ -39,6 +39,7 @@ import androidx.core.text.isDigitsOnly
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.sp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -157,7 +158,7 @@ fun Game(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        Text ( "Player: ${gameViewModel.getPlayerName()}")
+        Text ( "Player: ${gameViewModel.getPlayerName()}", fontSize = 40.sp)
 
         ScoreCard(gameViewModel, selectedCategory, onClick = {index: Int ->
             val scorecard = gameViewModel.getScoreCard()
@@ -167,7 +168,6 @@ fun Game(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
 
         } , modifier = Modifier)
 
-        Text ("Choose the dice you wish to keep:")
         DiceDisplay(gameViewModel, selectedDice, onToggle = { index ->
             selectedDice = selectedDice.toMutableList().also {
                 it[index] = !it[index]
@@ -179,20 +179,20 @@ fun Game(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
             }
         } else if (!gameViewModel.isRollingDone) {
 
-            Text ("Rolls left: ${gameViewModel.rerolls}")
+            Text ("Rolls left: ${gameViewModel.rerolls}", fontSize = 20.sp)
             Row {
                 Button(onClick = {
                     gameViewModel.reRollDice(selectedDice)
                     selectedDice = List(5){false}
-                }) {
-                    Text("Reroll dice")
+                }, Modifier.weight(1f).padding(5.dp)) {
+                    Text("Reroll dice", fontSize = 25.sp)
                 }
 
                 Button(onClick = {
                     gameViewModel.keepAllDice()
                     selectedDice = List(5){false}
-                }) {
-                    Text("Keep all")
+                }, Modifier.weight(1f).padding(5.dp)) {
+                    Text("Keep all", fontSize = 25.sp)
                 }
             }
 
@@ -216,8 +216,9 @@ fun ScoreCard(gameViewModel: GameViewModel, selectedCategory: Int, onClick: (Int
 
     val scoreCard = gameViewModel.getScoreCard()
 
-    Column {
-        Text("Scorecard")
+    Column (modifier = Modifier.padding(5.dp, 15.dp)){
+        Text("Scorecard:",
+            fontSize = 30.sp)
 
         Row{
             Column(modifier.weight(1f)) {
@@ -226,12 +227,14 @@ fun ScoreCard(gameViewModel: GameViewModel, selectedCategory: Int, onClick: (Int
                     val isSelected = index == selectedCategory
                     if (index <= 5) {
                         Text(text = "${scoreCategories[index]}: $category",
+                            fontSize = 25.sp,
                             modifier = if (gameViewModel.isRollingDone && gameViewModel.isPlayerTurn) {
-                                Modifier.clickable { onClick(index) }
-                                        .border(
-                                            width = if (isSelected) 3.dp else 0.dp,
-                                            color = if (isSelected) Color.Red else Color.Transparent
-                                        )
+                                Modifier
+                                    .clickable { onClick(index) }
+                                    .border(
+                                        width = if (isSelected) 3.dp else 0.dp,
+                                        color = if (isSelected) Color.Red else Color.Transparent
+                                    )
                             } else {
                                 Modifier
                             }
@@ -245,8 +248,10 @@ fun ScoreCard(gameViewModel: GameViewModel, selectedCategory: Int, onClick: (Int
                     val isSelected = index == selectedCategory
                     if (index > 5) {
                         Text(text = "${scoreCategories[index]}: $category",
+                            fontSize = 25.sp,
                             modifier = if (gameViewModel.isRollingDone && gameViewModel.isPlayerTurn) {
-                                Modifier.clickable { onClick(index) }
+                                Modifier
+                                    .clickable { onClick(index) }
                                     .border(
                                         width = if (isSelected) 3.dp else 0.dp,
                                         color = if (isSelected) Color.Red else Color.Transparent
@@ -266,6 +271,11 @@ fun ScoreCard(gameViewModel: GameViewModel, selectedCategory: Int, onClick: (Int
 fun DiceDisplay(gameViewModel: GameViewModel, selectedDice: List<Boolean>, onToggle: (Int) -> Unit) {
 
     val diceImages = gameViewModel.diceHand.map { calculateDiceImages(it) }
+
+    Column{
+        Text (text = "Click on the dice you wish to keep:",
+            fontSize = 20.sp)
+    }
 
     Row {
         diceImages.forEachIndexed { index, painter ->
