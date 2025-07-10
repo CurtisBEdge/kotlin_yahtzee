@@ -8,10 +8,12 @@ class GameModel {
 
 
     fun createGame(playerName: String, aiPlayers: Int) {
+        playerList.clear()
         val newPlayer = Player(playerName)
         // need to add ability to add AI players to the playerList
         playerList.add(newPlayer)
 //        playerList.add(Player("Brian"))
+//        playerList.add(Player("Steve"))
         currentPlayer = 0
         currentRound = 1
     }

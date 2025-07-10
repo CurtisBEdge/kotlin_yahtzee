@@ -184,7 +184,10 @@ fun Game(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
                     Text("Reroll dice")
                 }
 
-                Button(onClick = { gameViewModel.keepAllDice() }) {
+                Button(onClick = {
+                    gameViewModel.keepAllDice()
+                    selectedDice = List(5){false}
+                }) {
                     Text("Keep all")
                 }
             }
