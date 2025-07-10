@@ -28,11 +28,23 @@ class GameModel {
         currentPlayer ++
         if (currentPlayer >= playerList.size) {
             currentPlayer = 0
+            currentRound ++
         }
     }
 
     fun updateCurrentPlayerScore(category: Int, diceHand: ArrayList<Int>) {
         playerList[currentPlayer].updateScorecard(category, diceHand)
 
+    }
+
+    fun getFinalScores(): List<String> {
+        val playerScoreList = arrayListOf<String>()
+
+        playerList.forEach { player ->
+            val playerScore = player.calculateFinalScore()
+            playerScoreList.add("${player.playerName} scored $playerScore")
+        }
+
+        return playerScoreList
     }
 }

@@ -91,5 +91,24 @@ open class Player (playerName: String){
             .groupingBy { it }
             .eachCount()
     }
+
+    fun calculateFinalScore(): Int {
+        var topSection = 0
+        var bottomSection = 0
+
+        for (i in 0..5) {
+            topSection += scorecard[i].toInt()
+        }
+
+        for (i in 6..12) {
+            bottomSection += scorecard[i].toInt()
+        }
+
+        if (topSection >= 63) {
+            topSection += 35
+        }
+
+        return bottomSection + topSection
+    }
 }
 

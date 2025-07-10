@@ -188,6 +188,11 @@ fun Game(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
                     Text("Keep all")
                 }
             }
+
+        } else if (gameViewModel.gameFinished){
+            Button(onClick = onNextScreen) {
+                Text("Game Over, lets see the scores!")
+            }
         } else {
             Button(
                 onClick = {
@@ -307,11 +312,21 @@ fun calculateDiceImages(dice: Int): Painter {
 @Composable
 fun Results(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Button(onClick = onNextScreen) {
-            Text("You win, back to main menu")
+    val playerScores = gameViewModel.getFinalScores()
+
+    Column (modifier = Modifier.fillMaxSize()){
+        playerScores.forEach{ score ->
+            Text(score)
         }
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            Button(onClick = onNextScreen) {
+                Text("You win, back to main menu")
+            }
+        }
+
     }
+
 
 }
 

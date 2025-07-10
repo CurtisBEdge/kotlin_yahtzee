@@ -25,7 +25,11 @@ class GameViewModel(): ViewModel() {
     var rerolls by mutableIntStateOf(2)
     private set
 
+    var gameFinished by mutableStateOf(false)
+    private set
+
     fun createGame(playerName: String, aiPlayers: Int) {
+        gameFinished = false
         gameModel.createGame(playerName, aiPlayers)
         setCurrentPlayer()
     }
@@ -79,9 +83,16 @@ class GameViewModel(): ViewModel() {
 
     private fun resetTurn() {
         gameModel.incrementCurrentPlayer()
+        if (gameModel.getCurrentRound() > 13) {
+            gameFinished = true
+        }
         resetDiceToKeep()
         reRollDice(diceToKeep)
         rerolls = 2
         setCurrentPlayer()
+    }
+
+    fun getFinalScores(): List<String> {
+        return gameModel.getFinalScores()
     }
 }
