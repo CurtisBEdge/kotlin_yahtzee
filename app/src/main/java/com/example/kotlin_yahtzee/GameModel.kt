@@ -2,6 +2,8 @@ package com.example.kotlin_yahtzee
 
 class GameModel {
     private var currentPlayer = 0
+    private var currentRound = 1
+
     private var playerList: ArrayList<Player> = arrayListOf()
 
 
@@ -11,10 +13,15 @@ class GameModel {
         playerList.add(newPlayer)
 //        playerList.add(Player("Brian"))
         currentPlayer = 0
+        currentRound = 1
     }
 
     fun getCurrentPlayer(): Player {
         return playerList[currentPlayer]
+    }
+
+    fun getCurrentRound(): Int {
+        return currentRound
     }
 
     fun incrementCurrentPlayer() {

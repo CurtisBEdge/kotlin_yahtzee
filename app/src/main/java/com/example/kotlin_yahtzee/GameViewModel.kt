@@ -11,7 +11,7 @@ class GameViewModel(): ViewModel() {
     private val gameModel = GameModel()
     private lateinit var currentPlayer: Player
 
-    var diceHand = arrayListOf(2, 5, 6, 3, 1)
+    var diceHand = arrayListOf(rollDie(), rollDie(), rollDie(), rollDie(), rollDie())
     private set
 
     var diceToKeep = arrayListOf<Boolean>(false, false, false, false, false)
@@ -22,13 +22,12 @@ class GameViewModel(): ViewModel() {
     var isPlayerTurn by mutableStateOf(true)
     private set
 
-    var rerolls by mutableIntStateOf(3)
+    var rerolls by mutableIntStateOf(2)
     private set
 
     fun createGame(playerName: String, aiPlayers: Int) {
         gameModel.createGame(playerName, aiPlayers)
         setCurrentPlayer()
-        reRollDice(diceToKeep)
     }
 
     fun setCurrentPlayer() {
