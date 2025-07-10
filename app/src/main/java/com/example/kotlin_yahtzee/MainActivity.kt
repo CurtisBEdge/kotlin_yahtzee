@@ -103,7 +103,7 @@ fun MainScreen (gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
 
         Button(onClick = {
             if (aiNumber.isNotEmpty() && aiNumber.isDigitsOnly() && aiNumber.toInt() > -1 && aiNumber.toInt() < 5) {
-                gameViewModel.createGame(nameInput, 0)
+                gameViewModel.createGame(nameInput, aiNumber.toInt())
                 onNextScreen()
             } else {
                 aiNumber = "0"

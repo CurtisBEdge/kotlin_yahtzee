@@ -12,7 +12,10 @@ class GameModel {
         val newPlayer = Player(playerName)
         // need to add ability to add AI players to the playerList
         playerList.add(newPlayer)
-        playerList.add(Player("Brian"))
+        repeat(aiPlayers) {
+            playerList.add(AIPlayer())
+        }
+//        playerList.add(Player("Brian"))
 //        playerList.add(Player("Steve"))
         currentPlayer = 0
         currentRound = 1

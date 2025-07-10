@@ -1,4 +1,4 @@
-Where I'm up to - Need to start implementing the AI players now
+Where I'm up to - Need to start implementing the AI players now. just writing the logic for choosing which dice to keep
 
 
 
