@@ -173,7 +173,11 @@ fun Game(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
                 it[index] = !it[index]
         }})
 
-        if (!gameViewModel.isRollingDone) {
+        if (gameViewModel.gameFinished) {
+            Button(onClick = onNextScreen) {
+                Text("Game Over, lets see the scores!")
+            }
+        } else if (!gameViewModel.isRollingDone) {
 
             Text ("Rolls left: ${gameViewModel.rerolls}")
             Row {
@@ -192,10 +196,6 @@ fun Game(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
                 }
             }
 
-        } else if (gameViewModel.gameFinished){
-            Button(onClick = onNextScreen) {
-                Text("Game Over, lets see the scores!")
-            }
         } else {
             Button(
                 onClick = {
@@ -324,7 +324,7 @@ fun Results(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
 
         Box(modifier = Modifier.fillMaxSize()) {
             Button(onClick = onNextScreen) {
-                Text("You win, back to main menu")
+                Text("Play again?")
             }
         }
 

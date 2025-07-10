@@ -12,7 +12,7 @@ class GameModel {
         val newPlayer = Player(playerName)
         // need to add ability to add AI players to the playerList
         playerList.add(newPlayer)
-//        playerList.add(Player("Brian"))
+        playerList.add(Player("Brian"))
 //        playerList.add(Player("Steve"))
         currentPlayer = 0
         currentRound = 1
@@ -41,12 +41,31 @@ class GameModel {
 
     fun getFinalScores(): List<String> {
         val playerScoreList = arrayListOf<String>()
+        var scores: ArrayList<Int> = arrayListOf()
+
 
         playerList.forEach { player ->
             val playerScore = player.calculateFinalScore()
+            scores.add(playerScore)
             playerScoreList.add("${player.playerName} scored $playerScore")
         }
 
+        val winningList = findWinningPlayer(scores)
+
+        if (winningList.size == 1) {
+            playerScoreList.add("${playerList[winningList[0]].playerName} is the winner")
+        } else {
+            playerScoreList.add("It's a draw!")
+        }
+
         return playerScoreList
+    }
+
+    private fun findWinningPlayer(scores: ArrayList<Int>): List<Int> {
+        val highestScore = scores.max()
+
+        return scores.withIndex()
+            .filter {it.value == highestScore}
+            .map {it.index}
     }
 }
