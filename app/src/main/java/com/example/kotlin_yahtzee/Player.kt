@@ -82,11 +82,11 @@ open class Player (playerName: String){
             50 } else 0
     }
 
-    private fun calculateDiceTotalValue(diceHand: ArrayList<Int>): Int {
+    fun calculateDiceTotalValue(diceHand: ArrayList<Int>): Int {
         return diceHand.sum()
     }
 
-    private fun getDiceCount(diceHand: ArrayList<Int>): Map<Int, Int> {
+    fun getDiceCount(diceHand: ArrayList<Int>): Map<Int, Int> {
         return diceHand
             .groupingBy { it }
             .eachCount()

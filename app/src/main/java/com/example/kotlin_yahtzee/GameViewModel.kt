@@ -15,8 +15,6 @@ class GameViewModel(): ViewModel() {
     var diceHand = mutableStateListOf(rollDie(), rollDie(), rollDie(), rollDie(), rollDie())
     private set
 
-    //var diceToKeep = arrayListOf(false, false, false, false, false)
-
     var isRollingDone by mutableStateOf(false)
     private set
 
@@ -28,15 +26,6 @@ class GameViewModel(): ViewModel() {
 
     var gameFinished by mutableStateOf(false)
     private set
-
-
-    // game run through:
-    //
-    // createGame - changes state of the gameFinished, rerolls, isRollingDone, and runs create game in the model
-    // and sets current player from the gameModel
-
-
-    // Feed data to the UI
 
     fun getScoreCard(): ArrayList<String> {
         return currentPlayer.scorecard
