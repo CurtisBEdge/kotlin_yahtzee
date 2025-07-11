@@ -97,8 +97,9 @@ class GameViewModel(): ViewModel() {
 //
 //            gameModel.updateCurrentPlayerScore(chosenCategory, finalDiceHand)
             delay(2000L)
+
+            resetTurn()
         }
-        resetTurn()
     }
 
 
