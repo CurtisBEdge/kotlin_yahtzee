@@ -14,7 +14,7 @@ open class Player (playerName: String){
 
     }
 
-    private fun calculateScore(category: Int, diceHand: ArrayList<Int>): Int {
+    fun calculateScore(category: Int, diceHand: ArrayList<Int>): Int {
         return when (category + 1) {
             1, 2, 3, 4, 5, 6 -> calculateTopScores(category, diceHand)
             7, 8 -> calculateXOfAKindScores(category, diceHand)

@@ -111,14 +111,6 @@ class GameViewModel(): ViewModel() {
         return Random.nextInt(1, 7)
     }
 
-
-
-
-
-//    private fun resetDiceToKeep() {
-//        diceToKeep = arrayListOf(false, false, false, false, false)
-//    }
-
     fun keepAllDice() {
         isRollingDone = true
     }

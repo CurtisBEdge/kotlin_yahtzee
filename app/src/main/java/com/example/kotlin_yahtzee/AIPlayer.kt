@@ -13,14 +13,14 @@ class AIPlayer : Player(AINames.getName())  {
 
 
     private fun calculateAllOdds(diceHand: ArrayList<Int>): ArrayList<Double> {
-        var oddsList = arrayListOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+        val oddsList = arrayListOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
         for (i in 0..12) {
             when (i) {
                 0, 1, 2, 3, 4, 5 -> oddsList[i] = calculateTopSectionOdds(diceHand, i)
                 6, 7 -> oddsList[i] = calculateXOfAKindOdds(diceHand, i)
                 8 -> oddsList[i] = calculateFullHouseOdds(diceHand)
-                9, 10 -> oddsList[i] = calculateLowStraightOdds(diceHand, i)
+                9, 10 -> oddsList[i] = calculateStraightOdds(diceHand, i)
                 11 -> oddsList[i] = calculateYatzyOdds(diceHand)
             }
         }
@@ -35,10 +35,10 @@ class AIPlayer : Player(AINames.getName())  {
         var highestPTORCategory = 0
 
         scores.forEachIndexed{ index, score ->
-            val PTORatio = (score * multiplier) * oddsList[index]
+            val pTORatio = (score * multiplier) * oddsList[index]
 
-            if (PTORatio > highestPointsToOddsRatio) {
-                highestPointsToOddsRatio = PTORatio
+            if (pTORatio > highestPointsToOddsRatio) {
+                highestPointsToOddsRatio = pTORatio
                 highestPTORCategory = index
             }
         }
@@ -102,7 +102,7 @@ class AIPlayer : Player(AINames.getName())  {
         else 0.039
     }
 
-    private fun calculateLowStraightOdds(diceHand: ArrayList<Int>, category: Int): Double {
+    private fun calculateStraightOdds(diceHand: ArrayList<Int>, category: Int): Double {
         var lowStraightOne = arrayListOf(1, 2, 3, 4)
         var lowStraightTwo = arrayListOf(2, 3, 4, 5)
         var lowStraightThree = arrayListOf(3, 4, 5, 6)
@@ -110,7 +110,7 @@ class AIPlayer : Player(AINames.getName())  {
         diceHand.forEach{ die ->
 
         }
-        return 1.0
+        return 0.01
     }
 
     private fun calculateYatzyOdds(diceHand: ArrayList<Int>): Double {
@@ -132,7 +132,44 @@ class AIPlayer : Player(AINames.getName())  {
     }
 
 
-    fun choosePointsCategory(diceHand: ArrayList<Int>) {
+    fun choosePointsCategory(diceHand: ArrayList<Int>):Int {
+        val potentialScores = arrayListOf(-1, -1, -1, -1, -1, -1, -1 ,-1, -1, -1, -1, -1, -1)
+        val diceCounts = getDiceCount(diceHand)
+        var highestScore = -1
+        var highestScoreCategory = -1
 
+        for (i in 0..12) {
+            if(scorecard[i].isEmpty()) potentialScores[i] = calculateScore(i, diceHand)
+        }
+
+        if (potentialScores[11] > 0) return 12
+        else if (potentialScores[10] > 0) return 11
+        else if (potentialScores[9] > 0) return 10
+        else if (potentialScores[8] > 0){
+            for (i in 3..5){
+                if (diceCounts[i] == 3 && potentialScores[i] != -1 ) return 9
+            }
+        } else {
+            for (i in 1..6) {
+                if(diceCounts[i]!! >= 3 && potentialScores[i] > 0) return i
+                if(diceCounts[i]!! >= 4 && potentialScores[7] > 0) return 8
+                if(diceCounts[i]!! >= 3 && potentialScores[6] > 0) return 7
+            }
+        }
+
+        if(potentialScores[12] > -1) return 13
+        if(potentialScores[7] > -1) return 8
+        if(potentialScores[11] > -1) return 12
+        if(potentialScores[0] > -1) return 1
+        if(potentialScores[10] > -1) return 11
+
+        for (i in 0..12) {
+            if(potentialScores[i] > highestScore) {
+                highestScoreCategory = i + 1
+                highestScore = potentialScores[i]
+            }
+        }
+
+        return highestScoreCategory
     }
 }
