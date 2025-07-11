@@ -56,9 +56,9 @@ class GameViewModel(): ViewModel() {
 
     fun setCurrentPlayer() {
         currentPlayer = gameModel.getCurrentPlayer()
-//        if (currentPlayer is AIPlayer) {
-//            runAITurn()
-//        }
+        if (currentPlayer is AIPlayer) {
+            runAITurn()
+        }
     }
 
     fun chooseScoreCategory(category: Int) {
@@ -84,12 +84,12 @@ class GameViewModel(): ViewModel() {
     fun runAITurn() {
         viewModelScope.launch {
             diceHand = mutableStateListOf(6, 6, 6, 6, 6)
-//            var workingDiceHand = arrayListOf(diceHand[0], diceHand[1], diceHand[2], diceHand[3], diceHand[4] )
-//
-//            while (rerolls > 0) {
-//                reRollDice((currentPlayer as AIPlayer).chooseDiceToKeep(workingDiceHand))
-//                delay(2000L)
-//            }
+            var workingDiceHand = arrayListOf(diceHand[0], diceHand[1], diceHand[2], diceHand[3], diceHand[4] )
+
+            while (rerolls > 0) {
+                reRollDice((currentPlayer as AIPlayer).chooseDiceToKeep(workingDiceHand))
+                delay(2000L)
+            }
 //
 //            val finalDiceHand = arrayListOf(diceHand[0], diceHand[1], diceHand[2], diceHand[3], diceHand[4] )
 //
