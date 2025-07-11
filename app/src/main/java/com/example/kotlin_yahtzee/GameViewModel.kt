@@ -6,6 +6,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class GameViewModel(): ViewModel() {
@@ -53,6 +56,9 @@ class GameViewModel(): ViewModel() {
 
     fun setCurrentPlayer() {
         currentPlayer = gameModel.getCurrentPlayer()
+//        if (currentPlayer is AIPlayer) {
+//            runAITurn()
+//        }
     }
 
     fun chooseScoreCategory(category: Int) {
@@ -73,6 +79,26 @@ class GameViewModel(): ViewModel() {
             isRollingDone = true
         }
         setCurrentPlayer()
+    }
+
+    fun runAITurn() {
+        viewModelScope.launch {
+            diceHand = mutableStateListOf(6, 6, 6, 6, 6)
+//            var workingDiceHand = arrayListOf(diceHand[0], diceHand[1], diceHand[2], diceHand[3], diceHand[4] )
+//
+//            while (rerolls > 0) {
+//                reRollDice((currentPlayer as AIPlayer).chooseDiceToKeep(workingDiceHand))
+//                delay(2000L)
+//            }
+//
+//            val finalDiceHand = arrayListOf(diceHand[0], diceHand[1], diceHand[2], diceHand[3], diceHand[4] )
+//
+//            val chosenCategory = (currentPlayer as AIPlayer).choosePointsCategory(finalDiceHand)
+//
+//            gameModel.updateCurrentPlayerScore(chosenCategory, finalDiceHand)
+            delay(2000L)
+        }
+        resetTurn()
     }
 
 
@@ -114,4 +140,5 @@ class GameViewModel(): ViewModel() {
     fun keepAllDice() {
         isRollingDone = true
     }
+
 }

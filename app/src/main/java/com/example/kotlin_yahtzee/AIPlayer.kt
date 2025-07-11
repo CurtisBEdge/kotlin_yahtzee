@@ -127,8 +127,54 @@ class AIPlayer : Player(AINames.getName())  {
     }
 
     private fun chooseDice(diceHand: ArrayList<Int>, chosenCategory: Int): List<Boolean> {
+        var diceChoices = arrayListOf(false, false, false, false, false)
+        val diceCount = getDiceCount(diceHand)
+        val highestDiceCountNumber = diceCount.maxBy { it.value }.key
 
-        return listOf(false, false, false, false, false)
+        if (chosenCategory <= 6) { //Top section scores
+            diceHand.forEachIndexed { index, die ->
+                if (die == chosenCategory) {
+                    diceChoices[index] = true
+                }
+            }
+        }
+
+        else if (chosenCategory == 7 || chosenCategory == 8) { //3 and 4 of a kind scores
+            diceHand.forEachIndexed{ index, die ->
+                if (die == highestDiceCountNumber) {
+                    diceChoices[index] = true
+                }
+            }
+        }
+
+        else if (chosenCategory == 9) { //Full house scores
+            diceHand.forEachIndexed{index, die ->
+                if (diceCount[die]!! > 1) {
+                    diceChoices[index] = true
+                }
+            }
+        }
+
+        else if (chosenCategory == 10 || chosenCategory == 11) {
+
+        }
+
+        else if (chosenCategory == 12) {
+            diceHand.forEachIndexed{ index, die ->
+                if (die == highestDiceCountNumber) {
+                    diceChoices[index] = true
+                }
+            }
+        }
+
+        else {
+            diceHand.forEachIndexed{ index, die ->
+                if (die >= 4) diceChoices[index] = true
+            }
+        }
+
+
+        return diceChoices
     }
 
 
@@ -151,9 +197,9 @@ class AIPlayer : Player(AINames.getName())  {
             }
         } else {
             for (i in 1..6) {
-                if(diceCounts[i]!! >= 3 && potentialScores[i] > 0) return i
-                if(diceCounts[i]!! >= 4 && potentialScores[7] > 0) return 8
-                if(diceCounts[i]!! >= 3 && potentialScores[6] > 0) return 7
+                if(diceCounts[i]!! >= 3 && potentialScores[i] > 0) return i //returns top section category
+                if(diceCounts[i]!! >= 4 && potentialScores[7] > 0) return 8 // returns 4 of a kind
+                if(diceCounts[i]!! >= 3 && potentialScores[6] > 0) return 7 // returns 3 of a kind
             }
         }
 
