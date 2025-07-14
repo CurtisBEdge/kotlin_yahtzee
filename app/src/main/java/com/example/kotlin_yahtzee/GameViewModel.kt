@@ -90,12 +90,12 @@ class GameViewModel(): ViewModel() {
                 reRollDice((currentPlayer as AIPlayer).chooseDiceToKeep(workingDiceHand))
                 delay(2000L)
             }
-//
-//            val finalDiceHand = arrayListOf(diceHand[0], diceHand[1], diceHand[2], diceHand[3], diceHand[4] )
-//
-//            val chosenCategory = (currentPlayer as AIPlayer).choosePointsCategory(finalDiceHand)
-//
-//            gameModel.updateCurrentPlayerScore(chosenCategory, finalDiceHand)
+
+            val finalDiceHand = arrayListOf(diceHand[0], diceHand[1], diceHand[2], diceHand[3], diceHand[4] )
+
+            val chosenCategory = (currentPlayer as AIPlayer).choosePointsCategory(finalDiceHand)
+
+            gameModel.updateCurrentPlayerScore(chosenCategory, finalDiceHand)
             delay(2000L)
 
             resetTurn()
