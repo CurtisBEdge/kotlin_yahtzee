@@ -18,6 +18,9 @@ class GameViewModel(): ViewModel() {
     var diceHand = mutableStateListOf(rollDie(), rollDie(), rollDie(), rollDie(), rollDie())
     private set
 
+    var diceChoices = mutableStateListOf(false, false, false, false, false)
+    private set
+
     var isRollingDone by mutableStateOf(false)
     private set
 
@@ -71,6 +74,7 @@ class GameViewModel(): ViewModel() {
         isRollingDone = false
 //        resetDiceToKeep()
         //reRollDice(diceToKeep)
+        diceChoices = mutableStateListOf(false, false, false, false, false)
         rerolls = 2
         rollDice()
         gameModel.incrementCurrentPlayer()
@@ -83,12 +87,16 @@ class GameViewModel(): ViewModel() {
 
     fun runAITurn() {
         viewModelScope.launch {
-            diceHand = mutableStateListOf(6, 6, 6, 6, 6)
-            var workingDiceHand = arrayListOf(diceHand[0], diceHand[1], diceHand[2], diceHand[3], diceHand[4] )
+            val workingDiceHand = arrayListOf(diceHand[0], diceHand[1], diceHand[2], diceHand[3], diceHand[4] )
 
             while (rerolls > 0) {
-                reRollDice((currentPlayer as AIPlayer).chooseDiceToKeep(workingDiceHand))
+                val diceToKeep = (currentPlayer as AIPlayer).chooseDiceToKeep(workingDiceHand)
+
+                diceToKeep.forEachIndexed{index, diceChoice ->
+                    diceChoices[index] = diceToKeep[index]
+                }
                 delay(2000L)
+                reRollDice()
             }
 
             val finalDiceHand = arrayListOf(diceHand[0], diceHand[1], diceHand[2], diceHand[3], diceHand[4] )
@@ -112,6 +120,9 @@ class GameViewModel(): ViewModel() {
 
     // Dice rolling functions
 
+    fun toggleSelectedDie(index: Int) {
+        diceChoices[index] = !diceChoices[index]
+    }
 
     private fun rollDice() {
         for (i in 0..4) {
@@ -119,7 +130,7 @@ class GameViewModel(): ViewModel() {
         }
     }
 
-    fun reRollDice(diceSelected: List<Boolean>) {
+    fun reRollDice() {
 //        diceSelected.forEachIndexed{ index, die ->
 //            diceToKeep[index] = die
 //        }
@@ -127,7 +138,7 @@ class GameViewModel(): ViewModel() {
         if (rerolls <= 0) {
             isRollingDone = true
         }
-        diceSelected.forEachIndexed{index, dieToKeep: Boolean ->
+        diceChoices.forEachIndexed{index, dieToKeep: Boolean ->
             if (!dieToKeep) {
                 diceHand[index] = rollDie()
             }

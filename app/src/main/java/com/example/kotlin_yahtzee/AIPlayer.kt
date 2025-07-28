@@ -6,7 +6,9 @@ class AIPlayer : Player(AINames.getName())  {
 
     fun chooseDiceToKeep(diceHand: ArrayList<Int>): List<Boolean> {
         val categoryOddsList = calculateAllOdds(diceHand)
+        println("odds list $categoryOddsList")
         val chosenCategory = calculateOddPointRatio(diceHand, categoryOddsList)
+        println("chosen category $chosenCategory")
         val chosenDice = chooseDice(diceHand, chosenCategory)
         return chosenDice
     }
@@ -30,12 +32,11 @@ class AIPlayer : Player(AINames.getName())  {
 
     private fun calculateOddPointRatio(diceHand: ArrayList<Int>, oddsList: ArrayList<Double>): Int {
         val scores = arrayListOf(3, 6, 9, 12, 15, 18, 25, 25, 25, 30, 40, 50, calculateDiceTotalValue(diceHand))
-        val multiplier = 1.5
         var highestPointsToOddsRatio = 0.0
         var highestPTORCategory = 0
 
         scores.forEachIndexed{ index, score ->
-            val pTORatio = (score * multiplier) * oddsList[index]
+            val pTORatio = score * oddsList[index]
 
             if (pTORatio > highestPointsToOddsRatio) {
                 highestPointsToOddsRatio = pTORatio
@@ -48,7 +49,7 @@ class AIPlayer : Player(AINames.getName())  {
 
     private fun calculateTopSectionOdds(diceHand: ArrayList<Int>, category: Int): Double {
         val diceHandCount = getDiceCount(diceHand)
-        val diceCount = diceHandCount[category] ?: 0
+        val diceCount = diceHandCount[category + 1] ?: 0
 
         return when (diceCount) {
             5, 4, 3 -> 1.0
@@ -68,7 +69,7 @@ class AIPlayer : Player(AINames.getName())  {
                 3 -> 1.0
                 2 -> 0.421
                 1 -> 0.132
-                else -> 0.0
+                else -> 0.035
             }
         }
 
@@ -188,30 +189,30 @@ class AIPlayer : Player(AINames.getName())  {
             if(scorecard[i].isEmpty()) potentialScores[i] = calculateScore(i, diceHand)
         }
 
-        if (potentialScores[11] > 0) return 12
-        else if (potentialScores[10] > 0) return 11
-        else if (potentialScores[9] > 0) return 10
+        if (potentialScores[11] > 0) return 11
+        else if (potentialScores[10] > 0) return 10
+        else if (potentialScores[9] > 0) return 9
         else if (potentialScores[8] > 0){
             for (i in 3..5){
-                if (diceCounts[i] == 3 && potentialScores[i] != -1 ) return 9
+                if (diceCounts[i] == 3 && potentialScores[i] != -1 ) return 8
             }
         } else {
             for (i in 1..6) {
-                if(diceCounts[i]!! >= 3 && potentialScores[i] > 0) return i //returns top section category
-                if(diceCounts[i]!! >= 4 && potentialScores[7] > 0) return 8 // returns 4 of a kind
-                if(diceCounts[i]!! >= 3 && potentialScores[6] > 0) return 7 // returns 3 of a kind
+                if(diceCounts[i]?.let { it >= 3} == true && potentialScores[i - 1] > 0) return i - 1 //returns top section category
+                if(diceCounts[i]?.let { it >= 4} == true && potentialScores[7] > 0) return 7 // returns 4 of a kind
+                if(diceCounts[i]?.let { it >= 3} == true && potentialScores[6] > 0) return 6 // returns 3 of a kind
             }
         }
 
-        if(potentialScores[12] > -1) return 13
-        if(potentialScores[7] > -1) return 8
-        if(potentialScores[11] > -1) return 12
-        if(potentialScores[0] > -1) return 1
-        if(potentialScores[10] > -1) return 11
+        if(potentialScores[12] > -1) return 12
+        if(potentialScores[7] > -1) return 7
+        if(potentialScores[11] > -1) return 11
+        if(potentialScores[0] > -1) return 0
+        if(potentialScores[10] > -1) return 10
 
         for (i in 0..12) {
             if(potentialScores[i] > highestScore) {
-                highestScoreCategory = i + 1
+                highestScoreCategory = i
                 highestScore = potentialScores[i]
             }
         }

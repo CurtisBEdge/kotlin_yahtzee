@@ -153,7 +153,6 @@ fun AiNumberEntry(aiNumber: String, onValueChange: (String) -> Unit) {
 @Composable
 fun Game(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
 
-    var selectedDice by remember { mutableStateOf(List(5){false}) }
     var selectedCategory by remember { mutableIntStateOf(-1) }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -168,10 +167,12 @@ fun Game(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
 
         } , modifier = Modifier)
 
-        DiceDisplay(gameViewModel, selectedDice, onToggle = { index ->
-            selectedDice = selectedDice.toMutableList().also {
-                it[index] = !it[index]
-        }})
+        DiceDisplay(gameViewModel, onToggle = { index ->
+            gameViewModel.toggleSelectedDie(index)
+//            selectedDice = selectedDice.toMutableList().also {
+//                it[index] = !it[index]
+//        }
+    })
 
         if (gameViewModel.gameFinished) {
             Button(onClick = onNextScreen) {
@@ -182,15 +183,13 @@ fun Game(gameViewModel: GameViewModel, onNextScreen: () -> Unit) {
             Text ("Rolls left: ${gameViewModel.rerolls}", fontSize = 20.sp)
             Row {
                 Button(onClick = {
-                    gameViewModel.reRollDice(selectedDice)
-                    selectedDice = List(5){false}
+                    gameViewModel.reRollDice()
                 }, Modifier.weight(1f).padding(5.dp)) {
                     Text("Reroll dice", fontSize = 25.sp)
                 }
 
                 Button(onClick = {
                     gameViewModel.keepAllDice()
-                    selectedDice = List(5){false}
                 }, Modifier.weight(1f).padding(5.dp)) {
                     Text("Keep all", fontSize = 25.sp)
                 }
@@ -268,7 +267,7 @@ fun ScoreCard(gameViewModel: GameViewModel, selectedCategory: Int, onClick: (Int
 }
 
 @Composable
-fun DiceDisplay(gameViewModel: GameViewModel, selectedDice: List<Boolean>, onToggle: (Int) -> Unit) {
+fun DiceDisplay(gameViewModel: GameViewModel, onToggle: (Int) -> Unit) {
 
     val diceImages = gameViewModel.diceHand.map { calculateDiceImages(it) }
 
@@ -279,7 +278,7 @@ fun DiceDisplay(gameViewModel: GameViewModel, selectedDice: List<Boolean>, onTog
 
     Row {
         diceImages.forEachIndexed { index, painter ->
-            val isSelected = selectedDice[index]
+            val isSelected = gameViewModel.diceChoices[index]
             Image(
                 painter = painter,
                 contentDescription = null,
