@@ -107,6 +107,7 @@ class GameViewModel(): ViewModel() {
             delay(2000L)
 
             resetTurn()
+
         }
     }
 
