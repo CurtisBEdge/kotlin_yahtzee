@@ -1,0 +1,177 @@
+// src/test/kotlin/com/example/kotlin_yahtzee/PlayerTest.kt
+
+package com.example.kotlin_yahtzee
+
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
+
+class PlayerTest {
+
+    val player = Player("TestPlayer")
+
+    @Test
+    fun `test calculateTopScores - ones`() {
+        val dice = arrayListOf(1, 1, 1, 2, 3)
+        val score = player.calculateScore(0, dice)
+        assertEquals(3, score)
+    }
+
+    @Test
+    fun `test three of a kind`() {
+        val dice = arrayListOf(4, 4, 4, 2, 5)
+        val score = player.calculateScore(6, dice)
+        assertEquals(19, score) // sum of all dice
+    }
+
+    @Test
+    fun `test four of a kind`() {
+        val dice = arrayListOf(2, 2, 2, 2, 5)
+        val score = player.calculateScore(7, dice)
+        assertEquals(13, score)
+    }
+
+    @Test
+    fun `test full house valid`() {
+        val dice = arrayListOf(3, 3, 3, 5, 5)
+        val score = player.calculateScore(8, dice)
+        assertEquals(25, score)
+    }
+
+    @Test
+    fun `test full house invalid`() {
+        val dice = arrayListOf(2, 2, 2, 2, 5)
+        val score = player.calculateScore(8, dice)
+        assertEquals(0, score)
+    }
+
+    @Test
+    fun `test small straight`() {
+        val dice = arrayListOf(1, 2, 3, 4, 6)
+        val score = player.calculateScore(9, dice)
+        assertEquals(30, score)
+    }
+
+    @Test
+    fun `test large straight`() {
+        val dice = arrayListOf(2, 3, 4, 5, 6)
+        val score = player.calculateScore(10, dice)
+        assertEquals(40, score)
+    }
+
+    @Test
+    fun `test yatzy`() {
+        val dice = arrayListOf(6, 6, 6, 6, 6)
+        val score = player.calculateScore(11, dice)
+        assertEquals(50, score)
+    }
+
+    @Test
+    fun `test chance`() {
+        val dice = arrayListOf(1, 2, 3, 4, 5)
+        val score = player.calculateScore(12, dice)
+        assertEquals(15, score)
+    }
+
+    @Test
+    fun `test updateScorecard`() {
+        val dice = arrayListOf(1, 1, 1, 2, 2)
+        player.updateScorecard(8, dice) // Full House
+        assertEquals("25", player.scorecard[8])
+    }
+
+    @Test
+    fun `test calculateFinalScore with bonus`() {
+        val topScores = listOf(3, 6, 9, 12, 15, 18) // total = 63
+        val bottomScores = listOf("10", "10", "25", "30", "40", "50", "23")
+
+        topScores.forEachIndexed { i, score ->
+            player.scorecard[i] = score.toString()
+        }
+        bottomScores.forEachIndexed { i, score ->
+            player.scorecard[i + 6] = score
+        }
+
+        val finalScore = player.calculateFinalScore()
+        val expected = 63 + 35 + 10 + 10 + 25 + 30 + 40 + 50 + 23
+        assertEquals(expected, finalScore)
+    }
+
+}
+
+
+
+// src/test/kotlin/com/example/kotlin_yahtzee/AIPlayerTest.kt
+
+package com.example.kotlin_yahtzee
+
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
+
+class AIPlayerTest {
+
+    val aiPlayer = AIPlayer()
+
+    @Test
+    fun `choosePointsCategory - picks yatzy when valid`() {
+        val dice = arrayListOf(5, 5, 5, 5, 5)
+        val category = aiPlayer.choosePointsCategory(dice)
+        assertEquals(11, category)
+    }
+
+    @Test
+    fun `choosePointsCategory - picks large straight`() {
+        val dice = arrayListOf(2, 3, 4, 5, 6)
+        val category = aiPlayer.choosePointsCategory(dice)
+        assertEquals(10, category)
+    }
+
+    @Test
+    fun `chooseDiceToKeep - top section fours`() {
+        val dice = arrayListOf(4, 4, 2, 3, 1)
+        aiPlayer.scorecard[3] = "" // 4s category available
+        val keep = aiPlayer.chooseDiceToKeep(dice)
+
+        assertEquals(listOf(true, true, false, false, false), keep)
+    }
+
+    @Test
+    fun `chooseDiceToKeep - full house`() {
+        val dice = arrayListOf(2, 2, 2, 3, 3)
+        aiPlayer.scorecard[8] = ""
+        val keep = aiPlayer.chooseDiceToKeep(dice)
+
+        assertEquals(5, keep.count { it }) // should keep all
+    }
+
+    @Test
+    fun `calculateYatzyOdds - valid for three of a kind`() {
+        val dice = arrayListOf(6, 6, 6, 2, 3)
+        val odds = aiPlayer.calculateYatzyOdds(dice)
+        assertEquals(0.028, odds)
+    }
+
+    @Test
+    fun `calculateFullHouseOdds - valid for 3 and 2`() {
+        val dice = arrayListOf(4, 4, 4, 6, 6)
+        val odds = aiPlayer.calculateFullHouseOdds(dice)
+        assertEquals(1.0, odds)
+    }
+
+    @Test
+    fun `calculateFullHouseOdds - invalid for 4 of a kind`() {
+        val dice = arrayListOf(4, 4, 4, 4, 2)
+        val odds = aiPlayer.calculateFullHouseOdds(dice)
+        assertEquals(0.167, odds)
+    }
+}
+
+
+@Test
+fun `full player round calculates correct score and updates`() {
+    val dice = arrayListOf(3, 3, 3, 2, 2)
+    val player = Player("Alice")
+
+    player.updateScorecard(8, dice) // Full house
+    val finalScore = player.calculateFinalScore()
+    assertEquals(25, finalScore)
+}
