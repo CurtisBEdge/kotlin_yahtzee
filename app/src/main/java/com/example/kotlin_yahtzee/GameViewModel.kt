@@ -102,6 +102,8 @@ class GameViewModel(): ViewModel() {
             val finalDiceHand = arrayListOf(diceHand[0], diceHand[1], diceHand[2], diceHand[3], diceHand[4] )
 
             val chosenCategory = (currentPlayer as AIPlayer).choosePointsCategory(finalDiceHand)
+            println("Dice Hand $workingDiceHand")
+            println("Chosen Category $chosenCategory")
 
             gameModel.updateCurrentPlayerScore(chosenCategory, finalDiceHand)
             delay(2000L)

@@ -5,6 +5,8 @@ Where I'm up to - Need to start implementing the AI players now. just writing th
 
 
 **** Changed the game creation on the UI to always input AI players as 0 - This needs to be changed once AI is implemented
+DONE - AI calculated odds for categories that had already be used. Now this is calculated to 0.
+
 DONE - Randomly crashes when using 2 players.
 
 DONE - The rolls left is inconsistent, sometimes you can only choose category - does it every other turn, unless you keep all, then it resets

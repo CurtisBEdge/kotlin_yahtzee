@@ -5,6 +5,7 @@ class AIPlayer : Player(AINames.getName())  {
 
 
     fun chooseDiceToKeep(diceHand: ArrayList<Int>): List<Boolean> {
+        println("dice hand - $diceHand")
         val categoryOddsList = calculateAllOdds(diceHand)
         println("odds list $categoryOddsList")
         val chosenCategory = calculateOddPointRatio(diceHand, categoryOddsList)
@@ -18,12 +19,14 @@ class AIPlayer : Player(AINames.getName())  {
         val oddsList = arrayListOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
         for (i in 0..12) {
-            when (i) {
-                0, 1, 2, 3, 4, 5 -> oddsList[i] = calculateTopSectionOdds(diceHand, i)
-                6, 7 -> oddsList[i] = calculateXOfAKindOdds(diceHand, i)
-                8 -> oddsList[i] = calculateFullHouseOdds(diceHand)
-                9, 10 -> oddsList[i] = calculateStraightOdds(diceHand, i)
-                11 -> oddsList[i] = calculateYatzyOdds(diceHand)
+            if (scorecard[i] == "") {
+                when (i) {
+                    0, 1, 2, 3, 4, 5 -> oddsList[i] = calculateTopSectionOdds(diceHand, i)
+                    6, 7 -> oddsList[i] = calculateXOfAKindOdds(diceHand, i)
+                    8 -> oddsList[i] = calculateFullHouseOdds(diceHand)
+                    9, 10 -> oddsList[i] = calculateStraightOdds(diceHand, i)
+                    11 -> oddsList[i] = calculateYatzyOdds(diceHand)
+                }
             }
         }
 
@@ -38,6 +41,7 @@ class AIPlayer : Player(AINames.getName())  {
         scores.forEachIndexed{ index, score ->
             val pTORatio = score * oddsList[index]
 
+            println("Points ratio $pTORatio")
             if (pTORatio > highestPointsToOddsRatio) {
                 highestPointsToOddsRatio = pTORatio
                 highestPTORCategory = index
@@ -55,7 +59,7 @@ class AIPlayer : Player(AINames.getName())  {
             5, 4, 3 -> 1.0
             2 -> 0.421
             1 -> 0.132
-            else -> 0.0
+            else -> 0.035
         }
     }
 
